@@ -1,347 +1,412 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYBER-TASKER // v1.0</title>
-    <style>
-        :root {
-            --bg: #050505;
-            --card-bg: #0f0f0f;
-            --neon-blue: #00f2ff;
-            --neon-glow: 0 0 10px rgba(0, 242, 255, 0.5);
-            --text: #e0e0e0;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CYBER TASKER v2</title>
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+<style>
 
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
-        }
+:root{
+--bg:#050505;
+--card:#0f0f0f;
+--neon:#00f2ff;
+--text:#e8e8e8;
+}
 
-        /* Cyber UI Elements */
-        .neon-border {
-            border: 1px solid var(--neon-blue);
-            box-shadow: var(--neon-glow);
-        }
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI;
+}
 
-        header {
-            padding: 2rem;
-            text-align: center;
-            border-bottom: 2px solid var(--neon-blue);
-            text-transform: uppercase;
-            letter-spacing: 5px;
-            color: var(--neon-blue);
-            text-shadow: var(--neon-glow);
-        }
+body{
+background:var(--bg);
+color:var(--text);
+}
 
-        nav {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            padding: 1rem;
-            background: rgba(0,0,0,0.8);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
+header{
+text-align:center;
+padding:25px;
+font-size:28px;
+letter-spacing:4px;
+color:var(--neon);
+text-shadow:0 0 10px var(--neon);
+border-bottom:1px solid var(--neon);
+}
 
-        nav button {
-            background: transparent;
-            border: 1px solid var(--neon-blue);
-            color: var(--neon-blue);
-            padding: 8px 20px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
+nav{
+display:flex;
+justify-content:center;
+gap:15px;
+padding:12px;
+background:black;
+}
 
-        nav button:hover, nav button.active {
-            background: var(--neon-blue);
-            color: black;
-            box-shadow: var(--neon-glow);
-        }
+nav button{
+background:none;
+border:1px solid var(--neon);
+color:var(--neon);
+padding:8px 20px;
+cursor:pointer;
+}
 
-        .container {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-            flex-grow: 1;
-        }
+nav button.active,
+nav button:hover{
+background:var(--neon);
+color:black;
+}
 
-        .page { display: none; }
-        .page.active { display: block; animation: fadeIn 0.5s ease; }
+.container{
+max-width:850px;
+margin:auto;
+padding:20px;
+}
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.card{
+background:var(--card);
+padding:20px;
+margin-bottom:20px;
+border-left:3px solid var(--neon);
+box-shadow:0 0 12px rgba(0,242,255,0.2);
+}
 
-        /* Components */
-        .card {
-            background: var(--card-bg);
-            padding: 2rem;
-            margin-bottom: 1.5rem;
-            border-radius: 4px;
-            border-left: 4px solid var(--neon-blue);
-        }
+.page{display:none}
+.page.active{display:block}
 
-        input, button.action-btn {
-            background: #1a1a1a;
-            border: 1px solid #333;
-            color: white;
-            padding: 12px;
-            width: 100%;
-            margin-top: 10px;
-            border-radius: 4px;
-        }
+input{
+width:100%;
+padding:10px;
+background:#111;
+border:1px solid #333;
+color:white;
+margin-top:10px;
+}
 
-        button.action-btn {
-            border-color: var(--neon-blue);
-            color: var(--neon-blue);
-            cursor: pointer;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
+.action{
+margin-top:10px;
+padding:10px;
+background:none;
+border:1px solid var(--neon);
+color:var(--neon);
+cursor:pointer;
+}
 
-        .task-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 0;
-            border-bottom: 1px solid #222;
-        }
+.task{
+display:flex;
+gap:10px;
+padding:8px;
+border-bottom:1px solid #222;
+}
 
-        .streak-btn {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            margin: 2rem auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            background: transparent;
-            border: 4px solid var(--neon-blue);
-            color: var(--neon-blue);
-            box-shadow: inset var(--neon-glow), var(--neon-glow);
-            cursor: pointer;
-            transition: 0.3s;
-        }
+.progress{
+height:10px;
+background:#111;
+margin-top:10px;
+}
 
-        .streak-btn:active { transform: scale(0.95); }
+.bar{
+height:100%;
+background:var(--neon);
+width:0%;
+box-shadow:0 0 10px var(--neon);
+}
 
-        .badge {
-            display: inline-block;
-            padding: 10px;
-            margin: 5px;
-            border: 1px solid #333;
-            opacity: 0.4;
-            filter: grayscale(1);
-        }
+.levelBox{
+text-align:center;
+font-size:18px;
+margin-bottom:15px;
+}
 
-        .badge.unlocked {
-            opacity: 1;
-            filter: grayscale(0);
-            border-color: var(--neon-blue);
-            color: var(--neon-blue);
-            box-shadow: var(--neon-glow);
-        }
+.streak{
+font-size:22px;
+text-align:center;
+margin-top:10px;
+}
 
-    </style>
+.nofapBtn{
+width:180px;
+height:180px;
+border-radius:50%;
+margin:auto;
+display:flex;
+justify-content:center;
+align-items:center;
+border:4px solid var(--neon);
+color:var(--neon);
+font-size:20px;
+cursor:pointer;
+box-shadow:0 0 20px var(--neon);
+}
+
+.badge{
+padding:10px;
+border:1px solid #333;
+margin:5px;
+display:inline-block;
+opacity:0.3;
+}
+
+.badge.on{
+opacity:1;
+border-color:var(--neon);
+color:var(--neon);
+box-shadow:0 0 10px var(--neon);
+}
+
+</style>
 </head>
+
 <body>
 
-<header>Cyber-Tasker</header>
+<header>CYBER TASKER</header>
 
-<nav id="main-nav">
-    <button onclick="showPage('home')" class="active">HOME</button>
-    <button onclick="showPage('nofap')">NO-FAP</button>
-    <button onclick="showPage('achievements')">LOGS</button>
+<nav>
+<button onclick="page('home')" id="bhome">HOME</button>
+<button onclick="page('nofap')" id="bnofap">NOFAP</button>
+<button onclick="page('ach')" id="bach">ACHIEVEMENTS</button>
 </nav>
 
 <div class="container">
-    <div id="auth-page" class="page active">
-        <div class="card">
-            <h2>INITIALIZE PROTOCOL</h2>
-            <input type="text" id="username" placeholder="Enter Codename...">
-            <button class="action-btn" onclick="register()">START SYSTEM</button>
-        </div>
-    </div>
 
-    <div id="home-page" class="page">
-        <div class="card">
-            <h3>DAILY DIRECTIVES</h3>
-            <div id="daily-tasks-list"></div>
-        </div>
-        <div class="card">
-            <h3>TASK POOL</h3>
-            <input type="text" id="new-task" placeholder="Add a new potential task...">
-            <button class="action-btn" onclick="addToPool()">ADD TO POOL</button>
-        </div>
-    </div>
+<div id="login" class="page active">
+<div class="card">
+<h3>INITIALIZE</h3>
+<input id="name" placeholder="Enter codename">
+<button class="action" onclick="start()">START</button>
+</div>
+</div>
 
-    <div id="nofap-page" class="page">
-        <div class="card" style="text-align: center;">
-            <h2>STREAK TIMER</h2>
-            <button class="streak-btn" onclick="startNoFap()">
-                <span id="streak-count">0</span> DAYS
-            </button>
-            <p style="margin-top: 1rem;">Tap to reset or start your journey.</p>
-        </div>
-    </div>
+<div id="home" class="page">
 
-    <div id="achievements-page" class="page">
-        <div class="card">
-            <h3>SYSTEM ACHIEVEMENTS</h3>
-            <div id="achievement-grid"></div>
-        </div>
-    </div>
+<div class="card">
+<div class="levelBox">
+LEVEL <span id="level">1</span><br>
+XP <span id="xp">0</span>/100
+</div>
+
+<div class="progress">
+<div class="bar" id="xpbar"></div>
+</div>
+</div>
+
+<div class="card">
+<h3>DAILY TASKS</h3>
+<div id="tasks"></div>
+</div>
+
+<div class="card">
+<h3>TASK POOL</h3>
+<input id="taskInput" placeholder="Add task">
+<button class="action" onclick="addTask()">ADD</button>
+</div>
+
+</div>
+
+<div id="nofap" class="page">
+<div class="card" style="text-align:center">
+
+<h2>NOFAP STREAK</h2>
+
+<div class="nofapBtn" onclick="resetNF()">
+<span id="nfdays">0</span> DAYS
+</div>
+
+<p style="margin-top:10px">Tap to reset</p>
+
+</div>
+</div>
+
+<div id="ach" class="page">
+<div class="card">
+<h3>ACHIEVEMENTS</h3>
+<div id="achlist"></div>
+</div>
+</div>
+
 </div>
 
 <script>
-    // --- APP STATE ---
-    let state = {
-        user: null,
-        taskPool: [],
-        dailyTasks: [],
-        lastTaskRefresh: null,
-        noFapStart: null,
-        joinedDate: new Date().getTime(),
-        taskStreaks: 0
-    };
 
-    // --- CORE LOGIC ---
-    function init() {
-        const saved = localStorage.getItem('cyberTaskerData');
-        if (saved) {
-            state = JSON.parse(saved);
-            if (state.user) {
-                showPage('home');
-                refreshDailyTasks();
-            }
-        }
-        renderAchievements();
-    }
+let state={
+user:null,
+xp:0,
+pool:[],
+daily:[],
+last:null,
+nofap:null,
+join:Date.now()
+}
 
-    function register() {
-        const name = document.getElementById('username').value;
-        if (!name) return alert("Identify yourself!");
-        state.user = name;
-        state.joinedDate = new Date().getTime();
-        save();
-        showPage('home');
-    }
+function save(){
+localStorage.setItem("cybertask",JSON.stringify(state))
+}
 
-    function showPage(pageId) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-        
-        document.getElementById(pageId + '-page').classList.add('active');
-        const btns = document.querySelectorAll('nav button');
-        if(pageId === 'home') btns[0].classList.add('active');
-        if(pageId === 'nofap') btns[1].classList.add('active');
-        if(pageId === 'achievements') {
-            btns[2].classList.add('active');
-            renderAchievements();
-        }
-        
-        if(pageId === 'nofap') updateNoFapDisplay();
-    }
+function load(){
+let d=localStorage.getItem("cybertask")
+if(d){
+state=JSON.parse(d)
+if(state.user) page("home")
+}
+}
 
-    // --- TASK SYSTEM ---
-    function addToPool() {
-        const input = document.getElementById('new-task');
-        if (input.value) {
-            state.taskPool.push(input.value);
-            input.value = '';
-            save();
-            refreshDailyTasks();
-        }
-    }
+function start(){
+let n=document.getElementById("name").value
+if(!n)return
+state.user=n
+state.join=Date.now()
+save()
+page("home")
+}
 
-    function refreshDailyTasks() {
-        const now = new Date();
-        const todayStr = now.toDateString();
+function page(p){
 
-        if (state.lastTaskRefresh !== todayStr && state.taskPool.length >= 5) {
-            // Shuffle and pick 5
-            const shuffled = [...state.taskPool].sort(() => 0.5 - Math.random());
-            state.dailyTasks = shuffled.slice(0, 5).map(t => ({ text: t, done: false }));
-            state.lastTaskRefresh = todayStr;
-            save();
-        }
-        renderTasks();
-    }
+document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"))
+document.getElementById(p).classList.add("active")
 
-    function renderTasks() {
-        const list = document.getElementById('daily-tasks-list');
-        list.innerHTML = state.dailyTasks.length ? '' : '<p>Add at least 5 tasks to the pool to generate daily goals.</p>';
-        state.dailyTasks.forEach((task, index) => {
-            list.innerHTML += `
-                <div class="task-item">
-                    <input type="checkbox" ${task.done ? 'checked' : ''} onchange="toggleTask(${index})">
-                    <span style="${task.done ? 'text-decoration: line-through; opacity: 0.5' : ''}">${task.text}</span>
-                </div>
-            `;
-        });
-    }
+document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"))
+document.getElementById("b"+p).classList.add("active")
 
-    function toggleTask(index) {
-        state.dailyTasks[index].done = !state.dailyTasks[index].done;
-        save();
-        renderTasks();
-    }
+if(p=="home")genTasks()
+if(p=="nofap")nfDisplay()
+if(p=="ach")renderAch()
 
-    // --- NO FAP SYSTEM ---
-    function startNoFap() {
-        if(state.noFapStart && !confirm("This will reset your streak. Are you sure?")) return;
-        state.noFapStart = new Date().getTime();
-        save();
-        updateNoFapDisplay();
-    }
+}
 
-    function updateNoFapDisplay() {
-        if (!state.noFapStart) return;
-        const diff = new Date().getTime() - state.noFapStart;
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        document.getElementById('streak-count').innerText = days;
-    }
+function addTask(){
 
-    // --- ACHIEVEMENTS ---
-    const ACHIEVEMENT_LIST = [
-        { id: 'age1', title: 'Novice', req: 'Account 1 day old', check: () => (new Date().getTime() - state.joinedDate) > 86400000 },
-        { id: 'nf1', title: 'Initiate', req: '1 Day NoFap', check: () => getNoFapDays() >= 1 },
-        { id: 'nf20', title: 'Warrior', req: '20 Days NoFap', check: () => getNoFapDays() >= 20 },
-        { id: 'nf90', title: 'Overlord', req: '90 Days NoFap', check: () => getNoFapDays() >= 90 },
-        { id: 'nf500', title: 'Immortal', req: '500 Days NoFap', check: () => getNoFapDays() >= 500 }
-    ];
+let t=document.getElementById("taskInput")
 
-    function getNoFapDays() {
-        if (!state.noFapStart) return 0;
-        return Math.floor((new Date().getTime() - state.noFapStart) / (1000 * 60 * 60 * 24));
-    }
+if(t.value){
+state.pool.push(t.value)
+t.value=""
+save()
+genTasks()
+}
 
-    function renderAchievements() {
-        const grid = document.getElementById('achievement-grid');
-        grid.innerHTML = '';
-        ACHIEVEMENT_LIST.forEach(ach => {
-            const isUnlocked = ach.check();
-            grid.innerHTML += `
-                <div class="badge ${isUnlocked ? 'unlocked' : ''}">
-                    <strong>${ach.title}</strong><br>
-                    <small>${ach.req}</small>
-                </div>
-            `;
-        });
-    }
+}
 
-    function save() {
-        localStorage.setItem('cyberTaskerData', JSON.stringify(state));
-    }
+function genTasks(){
 
-    init();
+let today=new Date().toDateString()
+
+if(state.last!=today && state.pool.length>=5){
+
+let s=[...state.pool].sort(()=>Math.random()-0.5)
+
+state.daily=s.slice(0,5).map(x=>({text:x,done:false}))
+state.last=today
+
+}
+
+renderTasks()
+
+}
+
+function renderTasks(){
+
+let box=document.getElementById("tasks")
+
+box.innerHTML=""
+
+state.daily.forEach((t,i)=>{
+
+box.innerHTML+=`
+<div class="task">
+<input type="checkbox" ${t.done?"checked":""} onchange="toggle(${i})">
+<span style="${t.done?'text-decoration:line-through;opacity:.5':''}">
+${t.text}
+</span>
+</div>
+`
+
+})
+
+}
+
+function toggle(i){
+
+state.daily[i].done=!state.daily[i].done
+
+if(state.daily[i].done) state.xp+=10
+
+save()
+
+renderTasks()
+
+hud()
+
+}
+
+function hud(){
+
+let level=Math.floor(state.xp/100)+1
+let xp=state.xp%100
+
+document.getElementById("level").innerText=level
+document.getElementById("xp").innerText=xp
+
+document.getElementById("xpbar").style.width=xp+"%"
+
+}
+
+function nfDisplay(){
+
+if(!state.nofap)return
+
+let d=Math.floor((Date.now()-state.nofap)/86400000)
+
+document.getElementById("nfdays").innerText=d
+
+}
+
+function resetNF(){
+
+if(!confirm("Reset streak?"))return
+
+state.nofap=Date.now()
+
+save()
+
+nfDisplay()
+
+}
+
+const ACH=[
+{t:"Initiate",c:()=>state.user},
+{t:"Operator",c:()=>state.xp>=100},
+{t:"Strategist",c:()=>state.xp>=300},
+{t:"Commander",c:()=>state.xp>=600},
+{t:"Monk",c:()=>nfDays()>=30}
+]
+
+function nfDays(){
+if(!state.nofap)return 0
+return Math.floor((Date.now()-state.nofap)/86400000)
+}
+
+function renderAch(){
+
+let a=document.getElementById("achlist")
+
+a.innerHTML=""
+
+ACH.forEach(x=>{
+let on=x.c()
+
+a.innerHTML+=`
+<div class="badge ${on?"on":""}">
+${x.t}
+</div>`
+})
+
+}
+
+load()
+hud()
+
 </script>
+
 </body>
 </html>
