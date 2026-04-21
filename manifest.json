@@ -1,0 +1,12 @@
+{
+  "background_color": "#ffffff",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Nexus",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "Nexus",
+  "start_url": "/saur4vv.nexus",
+  "theme_color": "#ffffff",
+  "id": "Nexus.saur4v"
+}
