@@ -3,410 +3,1723 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CYBER TASKER v2</title>
-
+<title>NEXUS — Personal OS</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --cyan: #00f5ff;
+    --cyan-dim: #00bcd4;
+    --cyan-ghost: rgba(0, 245, 255, 0.08);
+    --cyan-glow: rgba(0, 245, 255, 0.4);
+    --blue: #0077ff;
+    --blue-dim: rgba(0, 119, 255, 0.15);
+    --bg: #030712;
+    --bg2: #080f1a;
+    --bg3: #0d1929;
+    --surface: rgba(0, 245, 255, 0.04);
+    --border: rgba(0, 245, 255, 0.15);
+    --border-bright: rgba(0, 245, 255, 0.4);
+    --text: #e0f7fa;
+    --text-dim: rgba(224, 247, 250, 0.5);
+    --text-ghost: rgba(224, 247, 250, 0.25);
+    --danger: #ff1744;
+    --success: #00e676;
+    --gold: #ffd740;
+    --font-display: 'Orbitron', monospace;
+    --font-mono: 'Share Tech Mono', monospace;
+    --font-body: 'Rajdhani', sans-serif;
+  }
 
-:root{
---bg:#050505;
---card:#0f0f0f;
---neon:#00f2ff;
---text:#e8e8e8;
-}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Segoe UI;
-}
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+    font-size: 16px;
+    letter-spacing: 0.02em;
+  }
 
-body{
-background:var(--bg);
-color:var(--text);
-}
+  /* ── GRID BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
 
-header{
-text-align:center;
-padding:25px;
-font-size:28px;
-letter-spacing:4px;
-color:var(--neon);
-text-shadow:0 0 10px var(--neon);
-border-bottom:1px solid var(--neon);
-}
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,119,255,0.07) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
 
-nav{
-display:flex;
-justify-content:center;
-gap:15px;
-padding:12px;
-background:black;
-}
+  /* ── AUTH SCREEN ── */
+  #auth-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+  }
 
-nav button{
-background:none;
-border:1px solid var(--neon);
-color:var(--neon);
-padding:8px 20px;
-cursor:pointer;
-}
+  .auth-box {
+    width: min(480px, 95vw);
+    background: var(--bg2);
+    border: 1px solid var(--border-bright);
+    padding: 48px 40px;
+    position: relative;
+    box-shadow: 0 0 60px rgba(0,245,255,0.1), inset 0 0 60px rgba(0,0,0,0.5);
+  }
 
-nav button.active,
-nav button:hover{
-background:var(--neon);
-color:black;
-}
+  .auth-box::before, .auth-box::after {
+    content: '';
+    position: absolute;
+    width: 20px; height: 20px;
+    border-color: var(--cyan);
+    border-style: solid;
+  }
+  .auth-box::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+  .auth-box::after  { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
 
-.container{
-max-width:850px;
-margin:auto;
-padding:20px;
-}
+  .auth-logo {
+    font-family: var(--font-display);
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--cyan);
+    text-shadow: 0 0 30px var(--cyan-glow);
+    margin-bottom: 4px;
+    letter-spacing: 0.15em;
+  }
 
-.card{
-background:var(--card);
-padding:20px;
-margin-bottom:20px;
-border-left:3px solid var(--neon);
-box-shadow:0 0 12px rgba(0,242,255,0.2);
-}
+  .auth-sub {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-ghost);
+    letter-spacing: 0.25em;
+    margin-bottom: 36px;
+  }
 
-.page{display:none}
-.page.active{display:block}
+  .auth-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+  }
 
-input{
-width:100%;
-padding:10px;
-background:#111;
-border:1px solid #333;
-color:white;
-margin-top:10px;
-}
+  .auth-tab {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
 
-.action{
-margin-top:10px;
-padding:10px;
-background:none;
-border:1px solid var(--neon);
-color:var(--neon);
-cursor:pointer;
-}
+  .auth-tab.active {
+    color: var(--cyan);
+    border-bottom-color: var(--cyan);
+    text-shadow: 0 0 10px var(--cyan-glow);
+  }
 
-.task{
-display:flex;
-gap:10px;
-padding:8px;
-border-bottom:1px solid #222;
-}
+  .auth-form { display: flex; flex-direction: column; gap: 14px; }
 
-.progress{
-height:10px;
-background:#111;
-margin-top:10px;
-}
+  .field-group { display: flex; flex-direction: column; gap: 6px; }
 
-.bar{
-height:100%;
-background:var(--neon);
-width:0%;
-box-shadow:0 0 10px var(--neon);
-}
+  .field-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--cyan-dim);
+    letter-spacing: 0.2em;
+  }
 
-.levelBox{
-text-align:center;
-font-size:18px;
-margin-bottom:15px;
-}
+  .cyber-input {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    padding: 12px 16px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+  }
 
-.streak{
-font-size:22px;
-text-align:center;
-margin-top:10px;
-}
+  .cyber-input:focus {
+    border-color: var(--cyan);
+    box-shadow: 0 0 15px rgba(0,245,255,0.15);
+  }
 
-.nofapBtn{
-width:180px;
-height:180px;
-border-radius:50%;
-margin:auto;
-display:flex;
-justify-content:center;
-align-items:center;
-border:4px solid var(--neon);
-color:var(--neon);
-font-size:20px;
-cursor:pointer;
-box-shadow:0 0 20px var(--neon);
-}
+  .cyber-btn {
+    background: transparent;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    padding: 14px 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
 
-.badge{
-padding:10px;
-border:1px solid #333;
-margin:5px;
-display:inline-block;
-opacity:0.3;
-}
+  .cyber-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--cyan);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+    z-index: -1;
+  }
 
-.badge.on{
-opacity:1;
-border-color:var(--neon);
-color:var(--neon);
-box-shadow:0 0 10px var(--neon);
-}
+  .cyber-btn:hover { color: var(--bg); box-shadow: 0 0 25px var(--cyan-glow); }
+  .cyber-btn:hover::before { transform: scaleX(1); }
 
+  .cyber-btn.danger { border-color: var(--danger); color: var(--danger); }
+  .cyber-btn.danger::before { background: var(--danger); }
+  .cyber-btn.danger:hover { color: white; box-shadow: 0 0 25px rgba(255,23,68,0.4); }
+
+  .cyber-btn.success { border-color: var(--success); color: var(--success); }
+  .cyber-btn.success::before { background: var(--success); }
+  .cyber-btn.success:hover { color: var(--bg); box-shadow: 0 0 25px rgba(0,230,118,0.4); }
+
+  .auth-error {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--danger);
+    padding: 10px;
+    border: 1px solid rgba(255,23,68,0.3);
+    background: rgba(255,23,68,0.05);
+    display: none;
+  }
+
+  /* ── MAIN APP ── */
+  #app { display: none; min-height: 100vh; position: relative; z-index: 1; }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    height: 60px;
+    background: rgba(3,7,18,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .topbar-logo {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--cyan);
+    text-shadow: 0 0 20px var(--cyan-glow);
+    letter-spacing: 0.2em;
+  }
+
+  .topbar-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+  }
+
+  .topbar-avatar {
+    width: 34px; height: 34px;
+    border: 1px solid var(--cyan);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    color: var(--cyan);
+    background: var(--cyan-ghost);
+  }
+
+  .logout-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-ghost);
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    padding: 5px 10px;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    transition: all 0.2s;
+  }
+  .logout-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+  /* ── NAV ── */
+  .nav {
+    display: flex;
+    gap: 0;
+    padding: 0 28px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(8,15,26,0.6);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 60px;
+    z-index: 99;
+  }
+
+  .nav-item {
+    padding: 16px 24px;
+    font-family: var(--font-display);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: var(--text-ghost);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    user-select: none;
+    position: relative;
+  }
+
+  .nav-item::after {
+    content: attr(data-label);
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 2px;
+    background: var(--cyan);
+    box-shadow: 0 0 10px var(--cyan);
+    transform: scaleX(0);
+    transition: transform 0.2s;
+  }
+
+  .nav-item:hover { color: var(--text-dim); }
+  .nav-item.active { color: var(--cyan); }
+  .nav-item.active::after { transform: scaleX(1); }
+
+  /* ── PAGES ── */
+  .page { display: none; padding: 36px 28px; max-width: 900px; margin: 0 auto; }
+  .page.active { display: block; animation: fadeIn 0.3s ease; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ── SECTION HEADERS ── */
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--cyan);
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 20px rgba(0,245,255,0.3);
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border-bright), transparent);
+  }
+
+  .section-tag {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--text-ghost);
+    letter-spacing: 0.2em;
+  }
+
+  /* ── CARDS ── */
+  .cyber-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 22px;
+    position: relative;
+    transition: border-color 0.2s;
+    margin-bottom: 14px;
+  }
+
+  .cyber-card:hover { border-color: rgba(0,245,255,0.3); }
+
+  .cyber-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--cyan);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .cyber-card:hover::before { opacity: 1; }
+
+  /* ── HOME PAGE ── */
+  .date-display {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-ghost);
+    letter-spacing: 0.25em;
+    margin-bottom: 6px;
+  }
+
+  .greeting {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 28px;
+  }
+
+  .greeting span { color: var(--cyan); text-shadow: 0 0 15px var(--cyan-glow); }
+
+  .tasks-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+
+  .task-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .task-item:hover { border-color: rgba(0,245,255,0.3); background: var(--cyan-ghost); }
+
+  .task-item.done { opacity: 0.5; }
+  .task-item.done .task-text { text-decoration: line-through; color: var(--text-ghost); }
+
+  .task-check {
+    width: 22px; height: 22px;
+    border: 1px solid var(--border-bright);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    font-size: 0.8rem;
+    color: var(--cyan);
+  }
+
+  .task-item.done .task-check {
+    background: var(--cyan);
+    color: var(--bg);
+    border-color: var(--cyan);
+  }
+
+  .task-text {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    flex: 1;
+  }
+
+  .task-category {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    color: var(--text-ghost);
+    border: 1px solid var(--border);
+    padding: 3px 8px;
+    flex-shrink: 0;
+  }
+
+  .progress-bar-wrap {
+    height: 3px;
+    background: var(--border);
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--blue), var(--cyan));
+    box-shadow: 0 0 10px var(--cyan-glow);
+    transition: width 0.4s ease;
+  }
+
+  .progress-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-ghost);
+    letter-spacing: 0.15em;
+    margin-bottom: 24px;
+  }
+
+  /* ── TASK POOL ── */
+  .pool-add-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .pool-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    margin-bottom: 8px;
+  }
+
+  .pool-item-text {
+    font-size: 0.95rem;
+    flex: 1;
+  }
+
+  .pool-item-cat {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    color: var(--text-ghost);
+    margin: 0 12px;
+    letter-spacing: 0.12em;
+  }
+
+  .del-btn {
+    background: none;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+    font-size: 1rem;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+    padding: 4px;
+  }
+  .del-btn:hover { opacity: 1; }
+
+  .cat-select {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    padding: 12px 10px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .regen-btn-wrap { display: flex; justify-content: center; margin-top: 10px; }
+
+  /* ── ACHIEVEMENTS ── */
+  .achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+  }
+
+  .achievement-card {
+    padding: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+
+  .achievement-card.unlocked {
+    border-color: rgba(0,245,255,0.4);
+    background: rgba(0,245,255,0.06);
+  }
+
+  .achievement-card.locked {
+    filter: grayscale(0.7);
+    opacity: 0.55;
+  }
+
+  .achievement-card.unlocked::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 40px; height: 40px;
+    background: linear-gradient(225deg, rgba(0,245,255,0.2), transparent);
+  }
+
+  .achievement-icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .achievement-title {
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    color: var(--cyan);
+    margin-bottom: 6px;
+  }
+
+  .achievement-card.locked .achievement-title { color: var(--text-ghost); }
+
+  .achievement-desc {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .achievement-status {
+    display: inline-block;
+    margin-top: 10px;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    padding: 4px 8px;
+  }
+
+  .achievement-card.unlocked .achievement-status {
+    color: var(--success);
+    border: 1px solid rgba(0,230,118,0.3);
+    background: rgba(0,230,118,0.07);
+  }
+
+  .achievement-card.locked .achievement-status {
+    color: var(--text-ghost);
+    border: 1px solid var(--border);
+  }
+
+  /* ── NOFAP PAGE ── */
+  .nofap-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 0 36px;
+    gap: 20px;
+  }
+
+  .streak-ring {
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    border: 3px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column;
+    position: relative;
+    background: radial-gradient(circle at center, rgba(0,119,255,0.1), transparent 70%);
+  }
+
+  .streak-ring::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,245,255,0.2);
+  }
+
+  .streak-ring::after {
+    content: '';
+    position: absolute;
+    inset: -12px;
+    border-radius: 50%;
+    border: 1px dashed rgba(0,245,255,0.08);
+  }
+
+  .streak-days {
+    font-family: var(--font-display);
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: var(--cyan);
+    text-shadow: 0 0 40px var(--cyan-glow);
+    line-height: 1;
+  }
+
+  .streak-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--text-ghost);
+    margin-top: 4px;
+  }
+
+  .streak-status {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  .nofap-btn {
+    width: min(320px, 90vw);
+    padding: 20px;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    border: 2px solid var(--cyan);
+    background: transparent;
+    color: var(--cyan);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+    text-shadow: 0 0 10px var(--cyan-glow);
+    box-shadow: 0 0 20px rgba(0,245,255,0.1), inset 0 0 20px rgba(0,245,255,0.03);
+  }
+
+  .nofap-btn:hover {
+    background: rgba(0,245,255,0.08);
+    box-shadow: 0 0 40px rgba(0,245,255,0.25), inset 0 0 30px rgba(0,245,255,0.08);
+  }
+
+  .nofap-btn.active {
+    border-color: var(--danger);
+    color: var(--danger);
+    text-shadow: 0 0 10px rgba(255,23,68,0.5);
+    box-shadow: 0 0 20px rgba(255,23,68,0.1);
+  }
+
+  .nofap-btn.active:hover {
+    background: rgba(255,23,68,0.05);
+    box-shadow: 0 0 40px rgba(255,23,68,0.2);
+  }
+
+  .timer-display {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text-ghost);
+    letter-spacing: 0.2em;
+    text-align: center;
+  }
+
+  .nofap-milestones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 10px;
+    max-width: 560px;
+  }
+
+  .milestone-chip {
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    padding: 5px 10px;
+    border: 1px solid var(--border);
+    color: var(--text-ghost);
+    transition: all 0.2s;
+  }
+
+  .milestone-chip.done {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(255,215,64,0.06);
+    text-shadow: 0 0 8px rgba(255,215,64,0.4);
+  }
+
+  .reset-confirm {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 20px;
+    border: 1px solid rgba(255,23,68,0.3);
+    background: rgba(255,23,68,0.04);
+    margin-top: 16px;
+    text-align: center;
+    width: min(340px, 90vw);
+  }
+
+  .reset-confirm p {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    line-height: 1.6;
+  }
+
+  .reset-confirm-btns { display: flex; gap: 10px; }
+
+  /* ── STATS ROW ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .stat-box {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 16px;
+    text-align: center;
+  }
+
+  .stat-value {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--cyan);
+    display: block;
+  }
+
+  .stat-name {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    color: var(--text-ghost);
+    margin-top: 4px;
+  }
+
+  /* ── TOAST ── */
+  #toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+  }
+
+  .toast {
+    background: var(--bg2);
+    border: 1px solid var(--cyan);
+    padding: 14px 20px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    color: var(--cyan);
+    box-shadow: 0 0 25px rgba(0,245,255,0.15);
+    animation: toastIn 0.3s ease, toastOut 0.4s ease 2.5s forwards;
+    min-width: 240px;
+    max-width: 340px;
+  }
+
+  .toast.gold {
+    border-color: var(--gold);
+    color: var(--gold);
+    box-shadow: 0 0 25px rgba(255,215,64,0.2);
+  }
+
+  @keyframes toastIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    border: 1px dashed var(--border);
+  }
+
+  .empty-state-icon { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.4; }
+  .empty-state-text {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-ghost);
+    letter-spacing: 0.15em;
+    line-height: 1.8;
+  }
+
+  /* ── SCAN LINE EFFECT ── */
+  @keyframes scan {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100vh); }
+  }
+
+  .scanline {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(transparent, rgba(0,245,255,0.04), transparent);
+    pointer-events: none;
+    z-index: 9999;
+    animation: scan 6s linear infinite;
+  }
+
+  /* ── DIVIDER ── */
+  .cyber-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 28px 0;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border-bright); }
+
+  /* ── GLITCH ANIM ── */
+  @keyframes glitch {
+    0%,100% { text-shadow: 0 0 20px var(--cyan-glow); }
+    20% { text-shadow: -2px 0 var(--blue), 2px 0 var(--cyan), 0 0 20px var(--cyan-glow); }
+    40% { text-shadow: 2px 0 var(--blue), -2px 0 var(--cyan), 0 0 20px var(--cyan-glow); }
+  }
+
+  .topbar-logo:hover { animation: glitch 0.4s steps(1) infinite; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .achievements-grid { grid-template-columns: 1fr; }
+    .nav-item { padding: 14px 14px; font-size: 0.6rem; }
+    .page { padding: 24px 16px; }
+    .topbar { padding: 0 16px; }
+    .nav { padding: 0 8px; }
+    .pool-add-row { flex-direction: column; }
+  }
+
+  .nofap-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nofap-tab {
+    padding: 10px 20px;
+    font-family: var(--font-display);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    transition: all 0.2s;
+  }
+  .nofap-tab.active { color: var(--cyan); border-bottom-color: var(--cyan); }
+
+  .nofap-panel { display: none; }
+  .nofap-panel.active { display: block; }
+
+  .day-log-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; }
+
+  .day-dot {
+    aspect-ratio: 1;
+    background: var(--border);
+    border-radius: 2px;
+    position: relative;
+    min-width: 0;
+  }
+
+  .day-dot.complete { background: var(--cyan); box-shadow: 0 0 6px var(--cyan-glow); }
+  .day-dot.relapse { background: var(--danger); box-shadow: 0 0 6px rgba(255,23,68,0.5); }
+  .day-dot[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 4px 8px;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    white-space: nowrap;
+    color: var(--text-dim);
+    pointer-events: none;
+    z-index: 10;
+  }
 </style>
 </head>
-
 <body>
 
-<header>CYBER TASKER</header>
+<div class="scanline"></div>
+<div id="toast-container"></div>
 
-<nav>
-<button onclick="page('home')" id="bhome">HOME</button>
-<button onclick="page('nofap')" id="bnofap">NOFAP</button>
-<button onclick="page('ach')" id="bach">ACHIEVEMENTS</button>
-</nav>
-
-<div class="container">
-
-<div id="login" class="page active">
-<div class="card">
-<h3>INITIALIZE</h3>
-<input id="name" placeholder="Enter codename">
-<button class="action" onclick="start()">START</button>
-</div>
-</div>
-
-<div id="home" class="page">
-
-<div class="card">
-<div class="levelBox">
-LEVEL <span id="level">1</span><br>
-XP <span id="xp">0</span>/100
-</div>
-
-<div class="progress">
-<div class="bar" id="xpbar"></div>
-</div>
-</div>
-
-<div class="card">
-<h3>DAILY TASKS</h3>
-<div id="tasks"></div>
-</div>
-
-<div class="card">
-<h3>TASK POOL</h3>
-<input id="taskInput" placeholder="Add task">
-<button class="action" onclick="addTask()">ADD</button>
-</div>
-
+<!-- AUTH -->
+<div id="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo">NEXUS</div>
+    <div class="auth-sub">// PERSONAL OPERATING SYSTEM v2.0</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')">LOGIN</button>
+      <button class="auth-tab" onclick="switchAuthTab('register')">REGISTER</button>
+    </div>
+    <div class="auth-error" id="auth-error"></div>
+    <div class="auth-form" id="login-form">
+      <div class="field-group">
+        <label class="field-label">// USERNAME</label>
+        <input class="cyber-input" type="text" id="login-user" placeholder="enter username" autocomplete="off">
+      </div>
+      <div class="field-group">
+        <label class="field-label">// PASSWORD</label>
+        <input class="cyber-input" type="password" id="login-pass" placeholder="••••••••">
+      </div>
+      <button class="cyber-btn" onclick="doLogin()">INITIALIZE SESSION</button>
+    </div>
+    <div class="auth-form" id="register-form" style="display:none">
+      <div class="field-group">
+        <label class="field-label">// USERNAME</label>
+        <input class="cyber-input" type="text" id="reg-user" placeholder="choose a callsign" autocomplete="off">
+      </div>
+      <div class="field-group">
+        <label class="field-label">// DISPLAY NAME</label>
+        <input class="cyber-input" type="text" id="reg-name" placeholder="your name" autocomplete="off">
+      </div>
+      <div class="field-group">
+        <label class="field-label">// PASSWORD</label>
+        <input class="cyber-input" type="password" id="reg-pass" placeholder="choose password">
+      </div>
+      <button class="cyber-btn" onclick="doRegister()">CREATE PROFILE</button>
+    </div>
+  </div>
 </div>
 
-<div id="nofap" class="page">
-<div class="card" style="text-align:center">
+<!-- MAIN APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-logo">NEXUS</div>
+    <div class="topbar-user">
+      <div class="topbar-avatar" id="topbar-avatar">U</div>
+      <span id="topbar-name">USER</span>
+      <button class="logout-btn" onclick="doLogout()">LOGOUT</button>
+    </div>
+  </div>
 
-<h2>NOFAP STREAK</h2>
+  <nav class="nav">
+    <div class="nav-item active" onclick="showPage('home')">⬡ HOME</div>
+    <div class="nav-item" onclick="showPage('achievements')">◈ ACHIEVEMENTS</div>
+    <div class="nav-item" onclick="showPage('nofap')">⬢ DISCIPLINE</div>
+  </nav>
 
-<div class="nofapBtn" onclick="resetNF()">
-<span id="nfdays">0</span> DAYS
-</div>
+  <!-- HOME PAGE -->
+  <div class="page active" id="page-home">
+    <div class="date-display" id="today-date"></div>
+    <div class="greeting">GOOD <span id="greeting-time">MORNING</span>, <span id="greeting-name">OPERATIVE</span></div>
 
-<p style="margin-top:10px">Tap to reset</p>
+    <div class="stats-row">
+      <div class="stat-box">
+        <span class="stat-value" id="stat-days">0</span>
+        <div class="stat-name">DAYS ACTIVE</div>
+      </div>
+      <div class="stat-box">
+        <span class="stat-value" id="stat-streak">0</span>
+        <div class="stat-name">TASK STREAK</div>
+      </div>
+      <div class="stat-box">
+        <span class="stat-value" id="stat-completed">0</span>
+        <div class="stat-name">TASKS DONE</div>
+      </div>
+    </div>
 
-</div>
-</div>
+    <div class="section-header">
+      <div class="section-title">TODAY'S MISSIONS</div>
+      <div class="section-line"></div>
+      <div class="section-tag">05 TASKS</div>
+    </div>
 
-<div id="ach" class="page">
-<div class="card">
-<h3>ACHIEVEMENTS</h3>
-<div id="achlist"></div>
-</div>
-</div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="task-progress" style="width:0%"></div>
+    </div>
+    <div class="progress-label" id="progress-label">0 / 5 COMPLETED</div>
 
+    <div class="tasks-grid" id="tasks-list"></div>
+    <div class="regen-btn-wrap">
+      <button class="cyber-btn" onclick="regenerateTasks()">⟳ REGENERATE TASKS</button>
+    </div>
+
+    <hr class="cyber-divider">
+
+    <div class="section-header">
+      <div class="section-title">TASK POOL</div>
+      <div class="section-line"></div>
+      <div class="section-tag" id="pool-count">0 ENTRIES</div>
+    </div>
+
+    <div class="pool-add-row">
+      <input class="cyber-input" id="pool-input" placeholder="add a task to the pool..." autocomplete="off" onkeydown="if(event.key==='Enter')addToPool()">
+      <select class="cat-select" id="pool-cat">
+        <option value="HEALTH">HEALTH</option>
+        <option value="MIND">MIND</option>
+        <option value="WORK">WORK</option>
+        <option value="SOCIAL">SOCIAL</option>
+        <option value="SKILL">SKILL</option>
+        <option value="HABIT">HABIT</option>
+      </select>
+      <button class="cyber-btn" onclick="addToPool()">ADD</button>
+    </div>
+
+    <div id="pool-list"></div>
+  </div>
+
+  <!-- ACHIEVEMENTS PAGE -->
+  <div class="page" id="page-achievements">
+    <div class="section-header">
+      <div class="section-title">ACHIEVEMENTS</div>
+      <div class="section-line"></div>
+      <div class="section-tag" id="ach-count-label">0 UNLOCKED</div>
+    </div>
+    <div class="achievements-grid" id="achievements-grid"></div>
+  </div>
+
+  <!-- NOFAP / DISCIPLINE PAGE -->
+  <div class="page" id="page-nofap">
+    <div class="section-header">
+      <div class="section-title">DISCIPLINE PROTOCOL</div>
+      <div class="section-line"></div>
+      <div class="section-tag">NO FAP</div>
+    </div>
+
+    <div class="nofap-tabs">
+      <button class="nofap-tab active" onclick="showNofapTab('tracker')">TRACKER</button>
+      <button class="nofap-tab" onclick="showNofapTab('log')">HISTORY</button>
+    </div>
+
+    <div class="nofap-panel active" id="nofap-tracker">
+      <div class="nofap-hero">
+        <div class="streak-ring">
+          <div class="streak-days" id="streak-days">0</div>
+          <div class="streak-label">DAYS CLEAN</div>
+        </div>
+
+        <div class="streak-status" id="streak-status-text"></div>
+        <div class="timer-display" id="streak-timer">—</div>
+
+        <button class="nofap-btn" id="nofap-main-btn" onclick="handleNofapBtn()">
+          INITIATE PROTOCOL
+        </button>
+
+        <div class="reset-confirm" id="reset-confirm">
+          <p>// RELAPSE CONFIRMATION<br>This will reset your streak to zero.<br>Are you sure?</p>
+          <div class="reset-confirm-btns">
+            <button class="cyber-btn danger" onclick="confirmReset()">CONFIRM RESET</button>
+            <button class="cyber-btn" onclick="cancelReset()">CANCEL</button>
+          </div>
+        </div>
+
+        <div class="nofap-milestones" id="milestones-row"></div>
+      </div>
+    </div>
+
+    <div class="nofap-panel" id="nofap-log">
+      <div class="section-header" style="margin-bottom:12px">
+        <div class="section-title" style="font-size:0.85rem">90-DAY VIEW</div>
+        <div class="section-line"></div>
+      </div>
+      <div class="day-log-grid" id="day-log-grid"></div>
+      <div style="display:flex;gap:16px;margin-top:16px;font-family:var(--font-mono);font-size:0.62rem;color:var(--text-ghost)">
+        <span><span style="display:inline-block;width:10px;height:10px;background:var(--cyan);margin-right:5px;vertical-align:middle;border-radius:2px"></span>CLEAN</span>
+        <span><span style="display:inline-block;width:10px;height:10px;background:var(--danger);margin-right:5px;vertical-align:middle;border-radius:2px"></span>RELAPSE</span>
+        <span><span style="display:inline-block;width:10px;height:10px;background:var(--border);margin-right:5px;vertical-align:middle;border-radius:2px"></span>FUTURE</span>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
+// ══════════════════════════════════════════
+//  DATA LAYER
+// ══════════════════════════════════════════
+const DB = {
+  get(key) { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } },
+  set(key, val) { localStorage.setItem(key, JSON.stringify(val)); },
+  del(key) { localStorage.removeItem(key); }
+};
 
-let state={
-user:null,
-xp:0,
-pool:[],
-daily:[],
-last:null,
-nofap:null,
-join:Date.now()
+function getUserData(username) {
+  return DB.get(`nexus_user_${username}`) || null;
 }
 
-function save(){
-localStorage.setItem("cybertask",JSON.stringify(state))
+function saveUserData(username, data) {
+  DB.set(`nexus_user_${username}`, data);
 }
 
-function load(){
-let d=localStorage.getItem("cybertask")
-if(d){
-state=JSON.parse(d)
-if(state.user) page("home")
-}
+function getAccounts() {
+  return DB.get('nexus_accounts') || {};
 }
 
-function start(){
-let n=document.getElementById("name").value
-if(!n)return
-state.user=n
-state.join=Date.now()
-save()
-page("home")
+function saveAccount(username, passHash, displayName) {
+  const accounts = getAccounts();
+  accounts[username] = { passHash, displayName, createdAt: Date.now() };
+  DB.set('nexus_accounts', accounts);
 }
 
-function page(p){
-
-document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"))
-document.getElementById(p).classList.add("active")
-
-document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"))
-document.getElementById("b"+p).classList.add("active")
-
-if(p=="home")genTasks()
-if(p=="nofap")nfDisplay()
-if(p=="ach")renderAch()
-
+function hashPass(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) {
+    h = Math.imul(31, h) + str.charCodeAt(i) | 0;
+  }
+  return h.toString(36);
 }
 
-function addTask(){
+let currentUser = null;
+let userData = null;
+let timerInterval = null;
 
-let t=document.getElementById("taskInput")
+const todayKey = () => new Date().toISOString().split('T')[0];
 
-if(t.value){
-state.pool.push(t.value)
-t.value=""
-save()
-genTasks()
+function defaultUserData(displayName) {
+  return {
+    displayName,
+    joinedAt: Date.now(),
+    taskPool: [
+      { id: uid(), text: 'Meditate for 10 minutes', cat: 'MIND' },
+      { id: uid(), text: 'Do 20 push-ups', cat: 'HEALTH' },
+      { id: uid(), text: 'Read for 30 minutes', cat: 'SKILL' },
+      { id: uid(), text: 'Drink 8 glasses of water', cat: 'HEALTH' },
+      { id: uid(), text: 'Write in your journal', cat: 'MIND' },
+      { id: uid(), text: 'Take a 20-minute walk', cat: 'HEALTH' },
+      { id: uid(), text: 'Practice gratitude - list 3 things', cat: 'MIND' },
+      { id: uid(), text: 'Learn something new for 15 min', cat: 'SKILL' },
+      { id: uid(), text: 'Avoid social media for 2 hours', cat: 'HABIT' },
+      { id: uid(), text: 'Cold shower', cat: 'HEALTH' },
+    ],
+    dailyTasks: {},      // { 'YYYY-MM-DD': [{id,text,cat,done},...] }
+    taskStreak: 0,
+    totalTasksDone: 0,
+    lastCompleteDay: null,
+    nofap: {
+      active: false,
+      startedAt: null,
+      history: [],      // [{date, type: 'start'|'relapse'|'clean'}]
+      bestStreak: 0,
+    }
+  };
 }
 
+function uid() {
+  return Math.random().toString(36).slice(2, 9);
 }
 
-function genTasks(){
-
-let today=new Date().toDateString()
-
-if(state.last!=today && state.pool.length>=5){
-
-let s=[...state.pool].sort(()=>Math.random()-0.5)
-
-state.daily=s.slice(0,5).map(x=>({text:x,done:false}))
-state.last=today
-
+function save() {
+  if (currentUser && userData) saveUserData(currentUser, userData);
 }
 
-renderTasks()
-
+// ══════════════════════════════════════════
+//  AUTH
+// ══════════════════════════════════════════
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t, i) => {
+    t.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'register'));
+  });
+  document.getElementById('login-form').style.display = tab === 'login' ? 'flex' : 'none';
+  document.getElementById('register-form').style.display = tab === 'register' ? 'flex' : 'none';
+  setAuthError('');
 }
 
-function renderTasks(){
-
-let box=document.getElementById("tasks")
-
-box.innerHTML=""
-
-state.daily.forEach((t,i)=>{
-
-box.innerHTML+=`
-<div class="task">
-<input type="checkbox" ${t.done?"checked":""} onchange="toggle(${i})">
-<span style="${t.done?'text-decoration:line-through;opacity:.5':''}">
-${t.text}
-</span>
-</div>
-`
-
-})
-
+function setAuthError(msg) {
+  const el = document.getElementById('auth-error');
+  el.textContent = msg;
+  el.style.display = msg ? 'block' : 'none';
 }
 
-function toggle(i){
-
-state.daily[i].done=!state.daily[i].done
-
-if(state.daily[i].done) state.xp+=10
-
-save()
-
-renderTasks()
-
-hud()
-
+function doLogin() {
+  const user = document.getElementById('login-user').value.trim().toLowerCase();
+  const pass = document.getElementById('login-pass').value;
+  if (!user || !pass) return setAuthError('// ALL FIELDS REQUIRED');
+  const accounts = getAccounts();
+  if (!accounts[user]) return setAuthError('// USER NOT FOUND');
+  if (accounts[user].passHash !== hashPass(pass)) return setAuthError('// INVALID CREDENTIALS');
+  launchApp(user);
 }
 
-function hud(){
-
-let level=Math.floor(state.xp/100)+1
-let xp=state.xp%100
-
-document.getElementById("level").innerText=level
-document.getElementById("xp").innerText=xp
-
-document.getElementById("xpbar").style.width=xp+"%"
-
+function doRegister() {
+  const user = document.getElementById('reg-user').value.trim().toLowerCase().replace(/\s+/g, '_');
+  const name = document.getElementById('reg-name').value.trim();
+  const pass = document.getElementById('reg-pass').value;
+  if (!user || !name || !pass) return setAuthError('// ALL FIELDS REQUIRED');
+  if (user.length < 3) return setAuthError('// USERNAME MIN 3 CHARS');
+  if (pass.length < 4) return setAuthError('// PASSWORD MIN 4 CHARS');
+  const accounts = getAccounts();
+  if (accounts[user]) return setAuthError('// USERNAME TAKEN');
+  saveAccount(user, hashPass(pass), name);
+  saveUserData(user, defaultUserData(name));
+  launchApp(user);
 }
 
-function nfDisplay(){
-
-if(!state.nofap)return
-
-let d=Math.floor((Date.now()-state.nofap)/86400000)
-
-document.getElementById("nfdays").innerText=d
-
+function doLogout() {
+  currentUser = null;
+  userData = null;
+  clearInterval(timerInterval);
+  document.getElementById('auth-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
 }
 
-function resetNF(){
+function launchApp(username) {
+  currentUser = username;
+  userData = getUserData(username);
+  if (!userData) userData = defaultUserData(username);
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
 
-if(!confirm("Reset streak?"))return
+  // Update display name in topbar
+  const name = userData.displayName || username;
+  document.getElementById('topbar-name').textContent = name.toUpperCase();
+  document.getElementById('topbar-avatar').textContent = name[0].toUpperCase();
 
-state.nofap=Date.now()
-
-save()
-
-nfDisplay()
-
+  ensureTodayTasks();
+  renderHome();
+  renderAchievements();
+  renderNofap();
+  startNofapTimer();
+  checkTaskStreakOnLoad();
 }
 
-const ACH=[
-{t:"Initiate",c:()=>state.user},
-{t:"Operator",c:()=>state.xp>=100},
-{t:"Strategist",c:()=>state.xp>=300},
-{t:"Commander",c:()=>state.xp>=600},
-{t:"Monk",c:()=>nfDays()>=30}
-]
+// ══════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(`page-${name}`).classList.add('active');
+  document.querySelectorAll('.nav-item')[['home','achievements','nofap'].indexOf(name)].classList.add('active');
 
-function nfDays(){
-if(!state.nofap)return 0
-return Math.floor((Date.now()-state.nofap)/86400000)
+  if (name === 'achievements') renderAchievements();
+  if (name === 'nofap') { renderNofap(); renderDayLog(); }
+  if (name === 'home') renderHome();
 }
 
-function renderAch(){
-
-let a=document.getElementById("achlist")
-
-a.innerHTML=""
-
-ACH.forEach(x=>{
-let on=x.c()
-
-a.innerHTML+=`
-<div class="badge ${on?"on":""}">
-${x.t}
-</div>`
-})
-
+function showNofapTab(tab) {
+  document.querySelectorAll('.nofap-tab').forEach((t, i) => {
+    t.classList.toggle('active', (i === 0 && tab === 'tracker') || (i === 1 && tab === 'log'));
+  });
+  document.querySelectorAll('.nofap-panel').forEach((p, i) => {
+    p.classList.toggle('active', (i === 0 && tab === 'tracker') || (i === 1 && tab === 'log'));
+  });
+  if (tab === 'log') renderDayLog();
 }
 
-load()
-hud()
+// ══════════════════════════════════════════
+//  HOME PAGE
+// ══════════════════════════════════════════
+function renderHome() {
+  // Date
+  const now = new Date();
+  const days = ['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
+  const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  document.getElementById('today-date').textContent =
+    `// ${days[now.getDay()]} — ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
 
+  const h = now.getHours();
+  document.getElementById('greeting-time').textContent =
+    h < 12 ? 'MORNING' : h < 17 ? 'AFTERNOON' : 'EVENING';
+  document.getElementById('greeting-name').textContent =
+    (userData.displayName || currentUser).toUpperCase();
+
+  // Stats
+  const daysActive = Math.floor((Date.now() - userData.joinedAt) / 86400000) + 1;
+  document.getElementById('stat-days').textContent = daysActive;
+  document.getElementById('stat-streak').textContent = userData.taskStreak || 0;
+  document.getElementById('stat-completed').textContent = userData.totalTasksDone || 0;
+
+  renderTasks();
+  renderPool();
+}
+
+function ensureTodayTasks() {
+  const key = todayKey();
+  if (!userData.dailyTasks[key]) {
+    userData.dailyTasks[key] = generateTasks();
+    save();
+  }
+}
+
+function generateTasks() {
+  const pool = userData.taskPool || [];
+  if (pool.length === 0) return [];
+  const shuffled = [...pool].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, Math.min(5, shuffled.length)).map(t => ({
+    id: uid(), text: t.text, cat: t.cat, done: false
+  }));
+}
+
+function regenerateTasks() {
+  if (userData.taskPool.length === 0) {
+    toast('// ADD TASKS TO POOL FIRST', false);
+    return;
+  }
+  userData.dailyTasks[todayKey()] = generateTasks();
+  save();
+  renderTasks();
+  toast('// NEW MISSION SET LOADED');
+}
+
+function renderTasks() {
+  const key = todayKey();
+  const tasks = userData.dailyTasks[key] || [];
+  const list = document.getElementById('tasks-list');
+
+  if (tasks.length === 0) {
+    list.innerHTML = `<div class="empty-state">
+      <div class="empty-state-icon">⬡</div>
+      <div class="empty-state-text">// NO TASKS GENERATED<br>ADD ITEMS TO YOUR TASK POOL BELOW</div>
+    </div>`;
+  } else {
+    list.innerHTML = tasks.map(t => `
+      <div class="task-item ${t.done ? 'done' : ''}" onclick="toggleTask('${t.id}')">
+        <div class="task-check">${t.done ? '✓' : ''}</div>
+        <div class="task-text">${escHtml(t.text)}</div>
+        <div class="task-category">${t.cat}</div>
+      </div>
+    `).join('');
+  }
+
+  const done = tasks.filter(t => t.done).length;
+  const total = tasks.length;
+  const pct = total ? Math.round(done / total * 100) : 0;
+  document.getElementById('task-progress').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = `${done} / ${total} COMPLETED`;
+}
+
+function toggleTask(id) {
+  const key = todayKey();
+  const tasks = userData.dailyTasks[key] || [];
+  const t = tasks.find(x => x.id === id);
+  if (!t) return;
+
+  const wasDone = t.done;
+  t.done = !t.done;
+
+  if (!wasDone) {
+    userData.totalTasksDone = (userData.totalTasksDone || 0) + 1;
+  } else {
+    userData.totalTasksDone = Math.max(0, (userData.totalTasksDone || 0) - 1);
+  }
+
+  // Check if all done
+  const allDone = tasks.length > 0 && tasks.every(x => x.done);
+  if (allDone) {
+    checkDayComplete(key);
+    toast('// ALL MISSIONS COMPLETE — STREAK UPDATED', false);
+    setTimeout(() => toast('⬡ DISCIPLINE MAINTAINED'), 400);
+  }
+
+  save();
+  renderTasks();
+  renderHome();
+  checkAchievements();
+}
+
+function checkDayComplete(key) {
+  if (userData.lastCompleteDay === key) return; // already credited
+  const yest = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+  if (userData.lastCompleteDay === yest) {
+    userData.taskStreak = (userData.taskStreak || 0) + 1;
+  } else {
+    userData.taskStreak = 1;
+  }
+  userData.lastCompleteDay = key;
+}
+
+function checkTaskStreakOnLoad() {
+  // If yesterday was completed but today hasn't started, streak is fine
+  // If 2+ days ago, reset streak
+  const yest = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+  const lastComplete = userData.lastCompleteDay;
+  if (lastComplete && lastComplete !== todayKey() && lastComplete !== yest) {
+    userData.taskStreak = 0;
+    save();
+  }
+}
+
+// POOL
+function renderPool() {
+  const pool = userData.taskPool || [];
+  document.getElementById('pool-count').textContent = `${pool.length} ENTRIES`;
+  const el = document.getElementById('pool-list');
+  if (pool.length === 0) {
+    el.innerHTML = `<div class="empty-state">
+      <div class="empty-state-icon">◈</div>
+      <div class="empty-state-text">// TASK POOL IS EMPTY<br>ADD TASKS ABOVE TO BEGIN</div>
+    </div>`;
+    return;
+  }
+  el.innerHTML = pool.map(t => `
+    <div class="pool-item">
+      <span class="pool-item-text">${escHtml(t.text)}</span>
+      <span class="pool-item-cat">[${t.cat}]</span>
+      <button class="del-btn" onclick="removeFromPool('${t.id}')">✕</button>
+    </div>
+  `).join('');
+}
+
+function addToPool() {
+  const input = document.getElementById('pool-input');
+  const cat = document.getElementById('pool-cat').value;
+  const text = input.value.trim();
+  if (!text) return;
+  userData.taskPool.push({ id: uid(), text, cat });
+  input.value = '';
+  save();
+  renderPool();
+  toast('// TASK ADDED TO POOL');
+}
+
+function removeFromPool(id) {
+  userData.taskPool = userData.taskPool.filter(t => t.id !== id);
+  save();
+  renderPool();
+}
+
+// ══════════════════════════════════════════
+//  ACHIEVEMENTS
+// ══════════════════════════════════════════
+const ACHIEVEMENTS = [
+  // App usage
+  { id: 'first_login',   icon: '⬡', title: 'FIRST BOOT',      desc: 'Created your NEXUS profile.',            check: d => true },
+  { id: 'day3',          icon: '◈', title: 'SIGNAL LOCK',      desc: '3 days on the grid.',                    check: d => daysActive(d) >= 3 },
+  { id: 'day7',          icon: '◉', title: 'WEEKLY ECHO',      desc: '7 days on the grid.',                    check: d => daysActive(d) >= 7 },
+  { id: 'day14',         icon: '◍', title: 'FORTNIGHT',        desc: '14 days on the grid.',                   check: d => daysActive(d) >= 14 },
+  { id: 'day30',         icon: '◈', title: 'ONE MONTH UPLINK', desc: '30 days on the grid.',                   check: d => daysActive(d) >= 30 },
+  { id: 'day90',         icon: '✦', title: 'QUARTER CYCLE',    desc: '90 days on the grid.',                   check: d => daysActive(d) >= 90 },
+  { id: 'day365',        icon: '✸', title: 'ANNUAL NEXUS',     desc: '365 days — a full revolution.',           check: d => daysActive(d) >= 365 },
+
+  // Task streak
+  { id: 'streak3',       icon: '⬥', title: 'MOMENTUM',         desc: 'Complete all tasks 3 days in a row.',    check: d => (d.taskStreak || 0) >= 3 },
+  { id: 'streak7',       icon: '⬦', title: 'IRON WILL',        desc: 'Complete all tasks 7 days in a row.',    check: d => (d.taskStreak || 0) >= 7 },
+  { id: 'streak30',      icon: '⬟', title: 'PROTOCOL PRIME',   desc: 'Complete all tasks 30 days in a row.',   check: d => (d.taskStreak || 0) >= 30 },
+  { id: 'tasks50',       icon: '◆', title: 'HALF CENTURY',     desc: '50 total tasks completed.',               check: d => (d.totalTasksDone || 0) >= 50 },
+  { id: 'tasks200',      icon: '◈', title: 'CENTURION',        desc: '200 total tasks completed.',              check: d => (d.totalTasksDone || 0) >= 200 },
+
+  // Pool size
+  { id: 'pool10',        icon: '⬡', title: 'DATA RICH',        desc: '10+ tasks in your pool.',                check: d => (d.taskPool || []).length >= 10 },
+
+  // Nofap
+  { id: 'nf1',           icon: '🔒', title: 'FIRST LOCK',       desc: 'First day of the Discipline Protocol.',  check: d => nfDays(d) >= 1 },
+  { id: 'nf5',           icon: '🔐', title: 'FIVE DAYS FORGED', desc: '5 days — the first test passed.',        check: d => nfDays(d) >= 5 },
+  { id: 'nf20',          icon: '⚡', title: 'SURGE',            desc: '20 days — the reboot begins.',           check: d => nfDays(d) >= 20 },
+  { id: 'nf30',          icon: '🌀', title: 'REWIRE INITIATED', desc: '30 days — neural pathways shifting.',    check: d => nfDays(d) >= 30 },
+  { id: 'nf60',          icon: '🔥', title: 'BLAZE PROTOCOL',   desc: '60 days — energy transformed.',          check: d => nfDays(d) >= 60 },
+  { id: 'nf90',          icon: '🏆', title: 'NINETY DAYS',      desc: '90 days — the classic milestone.',       check: d => nfDays(d) >= 90 },
+  { id: 'nf120',         icon: '💠', title: 'BEYOND THE VEIL',  desc: '120 days — discipline is identity.',     check: d => nfDays(d) >= 120 },
+  { id: 'nf200',         icon: '🌌', title: 'BICENTENNIAL',     desc: '200 days — you are different now.',      check: d => nfDays(d) >= 200 },
+  { id: 'nf300',         icon: '⭐', title: 'ARCHON',           desc: '300 days — near absolute mastery.',      check: d => nfDays(d) >= 300 },
+  { id: 'nf500',         icon: '🌠', title: 'TRANSCENDENCE',    desc: '500 days — few ever reach this.',        check: d => nfDays(d) >= 500 },
+];
+
+function daysActive(d) {
+  return Math.floor((Date.now() - d.joinedAt) / 86400000) + 1;
+}
+
+function nfDays(d) {
+  if (!d.nofap || !d.nofap.active || !d.nofap.startedAt) return d.nofap?.bestStreak || 0;
+  const current = Math.floor((Date.now() - d.nofap.startedAt) / 86400000);
+  return Math.max(current, d.nofap.bestStreak || 0);
+}
+
+function checkAchievements() {
+  if (!userData) return;
+  const unlocked = userData.unlockedAchievements || [];
+  ACHIEVEMENTS.forEach(a => {
+    if (!unlocked.includes(a.id) && a.check(userData)) {
+      unlocked.push(a.id);
+      toast(`🏅 ACHIEVEMENT UNLOCKED: ${a.title}`, true);
+    }
+  });
+  userData.unlockedAchievements = unlocked;
+  save();
+}
+
+function renderAchievements() {
+  if (!userData) return;
+  const unlocked = userData.unlockedAchievements || [];
+  const grid = document.getElementById('achievements-grid');
+
+  grid.innerHTML = ACHIEVEMENTS.map(a => {
+    const isUnlocked = unlocked.includes(a.id) || a.check(userData);
+    return `
+      <div class="achievement-card ${isUnlocked ? 'unlocked' : 'locked'}">
+        <span class="achievement-icon">${a.icon}</span>
+        <div class="achievement-title">${a.title}</div>
+        <div class="achievement-desc">${a.desc}</div>
+        <span class="achievement-status">${isUnlocked ? '✓ UNLOCKED' : '⬡ LOCKED'}</span>
+      </div>
+    `;
+  }).join('');
+
+  const count = ACHIEVEMENTS.filter(a => unlocked.includes(a.id) || a.check(userData)).length;
+  document.getElementById('ach-count-label').textContent = `${count}/${ACHIEVEMENTS.length} UNLOCKED`;
+}
+
+// ══════════════════════════════════════════
+//  NOFAP
+// ══════════════════════════════════════════
+const NF_MILESTONES = [1, 5, 20, 30, 60, 90, 120, 200, 300, 500];
+
+function getNfDays() {
+  if (!userData.nofap.active || !userData.nofap.startedAt) return 0;
+  return Math.floor((Date.now() - userData.nofap.startedAt) / 86400000);
+}
+
+function getNfSeconds() {
+  if (!userData.nofap.active || !userData.nofap.startedAt) return 0;
+  return Math.floor((Date.now() - userData.nofap.startedAt) / 1000);
+}
+
+function formatTime(totalSeconds) {
+  const d = Math.floor(totalSeconds / 86400);
+  const h = Math.floor((totalSeconds % 86400) / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
+  if (d > 0) return `${d}D ${pad(h)}H ${pad(m)}M ${pad(s)}S`;
+  return `${pad(h)}H ${pad(m)}M ${pad(s)}S`;
+}
+
+function pad(n) { return String(n).padStart(2, '0'); }
+
+function renderNofap() {
+  if (!userData) return;
+  const nf = userData.nofap;
+  const days = getNfDays();
+
+  document.getElementById('streak-days').textContent = days;
+
+  const btn = document.getElementById('nofap-main-btn');
+  const statusEl = document.getElementById('streak-status-text');
+
+  if (nf.active) {
+    btn.textContent = 'MARK RELAPSE';
+    btn.className = 'nofap-btn active';
+    statusEl.textContent = '// PROTOCOL ACTIVE — HOLD THE LINE';
+    statusEl.style.color = 'var(--success)';
+  } else {
+    btn.textContent = nf.startedAt ? 'RESTART PROTOCOL' : 'INITIATE PROTOCOL';
+    btn.className = 'nofap-btn';
+    statusEl.textContent = nf.startedAt ? '// PROTOCOL INACTIVE' : '// AWAITING INITIALIZATION';
+    statusEl.style.color = 'var(--text-ghost)';
+  }
+
+  // Milestones
+  const milestonesEl = document.getElementById('milestones-row');
+  milestonesEl.innerHTML = NF_MILESTONES.map(m => {
+    const reached = days >= m || (nf.bestStreak || 0) >= m;
+    return `<div class="milestone-chip ${reached ? 'done' : ''}">${m}D</div>`;
+  }).join('');
+}
+
+function handleNofapBtn() {
+  const nf = userData.nofap;
+  if (!nf.active) {
+    // Start protocol
+    nf.active = true;
+    nf.startedAt = Date.now();
+    nf.history.push({ date: todayKey(), type: 'start' });
+    save();
+    renderNofap();
+    startNofapTimer();
+    toast('// DISCIPLINE PROTOCOL INITIATED');
+    checkAchievements();
+  } else {
+    // Show confirm reset
+    document.getElementById('reset-confirm').style.display = 'flex';
+  }
+}
+
+function cancelReset() {
+  document.getElementById('reset-confirm').style.display = 'none';
+}
+
+function confirmReset() {
+  const nf = userData.nofap;
+  const days = getNfDays();
+  nf.bestStreak = Math.max(nf.bestStreak || 0, days);
+  nf.active = false;
+  nf.history.push({ date: todayKey(), type: 'relapse', daysKept: days });
+  nf.startedAt = null;
+  document.getElementById('reset-confirm').style.display = 'none';
+  save();
+  renderNofap();
+  clearInterval(timerInterval);
+  document.getElementById('streak-timer').textContent = `LAST STREAK: ${days} DAYS`;
+  toast('// PROTOCOL RESET — RISE AGAIN', false);
+  checkAchievements();
+}
+
+function startNofapTimer() {
+  clearInterval(timerInterval);
+  if (!userData.nofap.active) return;
+  function tick() {
+    const secs = getNfSeconds();
+    document.getElementById('streak-timer').textContent = `// ${formatTime(secs)}`;
+    document.getElementById('streak-days').textContent = getNfDays();
+    checkAchievements();
+  }
+  tick();
+  timerInterval = setInterval(tick, 1000);
+}
+
+function renderDayLog() {
+  const grid = document.getElementById('day-log-grid');
+  const now = new Date();
+  const nf = userData.nofap;
+  const dots = [];
+
+  for (let i = 89; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().split('T')[0];
+    const isFuture = d > now;
+
+    let cls = '';
+    let title = key;
+    if (!isFuture && nf.startedAt) {
+      const started = new Date(nf.startedAt).toISOString().split('T')[0];
+      // Check if this day falls in an active or past streak
+      const isRelapse = nf.history.find(h => h.date === key && h.type === 'relapse');
+      if (isRelapse) {
+        cls = 'relapse'; title = `${key} — RELAPSE`;
+      } else if (key >= started && (nf.active || key < (nf.history.find(h=>h.type==='relapse')?.date||'z'))) {
+        cls = 'complete'; title = `${key} — CLEAN`;
+      }
+    }
+
+    dots.push(`<div class="day-dot ${cls}" title="${title}"></div>`);
+  }
+
+  grid.innerHTML = dots.join('');
+}
+
+// ══════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════
+function toast(msg, isGold = false) {
+  const container = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className = `toast${isGold ? ' gold' : ''}`;
+  el.textContent = msg;
+  container.appendChild(el);
+  setTimeout(() => el.remove(), 3200);
+}
+
+// ══════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ══════════════════════════════════════════
+//  KEYBOARD SHORTCUTS
+// ══════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (document.getElementById('auth-screen').style.display === 'none') return;
+  if (e.key === 'Enter') {
+    const loginForm = document.getElementById('login-form');
+    if (loginForm.style.display !== 'none') doLogin();
+    else doRegister();
+  }
+});
+
+// Auto check achievements every minute
+setInterval(() => { if (userData) { checkAchievements(); renderAchievements(); } }, 60000);
 </script>
-
 </body>
 </html>
